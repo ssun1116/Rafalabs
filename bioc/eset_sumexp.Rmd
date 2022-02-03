@@ -1,0 +1,99 @@
+---
+layout: page
+title: ExpressionSet and SummarizedExperiment
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+```{r message=FALSE}
+library(Biobase)
+library(GEOquery)
+```
+
+```{r}
+geoq <- getGEO("GSE9514")    # download a dataset from GEO
+names(geoq)
+e <- geoq[[1]]    # extract ExpressionSet
+```
+
+### ExpressionSet
+
+```{r}
+# exprs gives expression matrix
+dim(e)    # number of features and samples in ExpressionSet
+exprs(e)[1:3,1:3]
+dim(exprs(e))    # rows are features, columns are samples
+
+# pData gives phenotype data (sample information)
+pData(e)[1:3,1:6]
+dim(pData(e))    # rows of pData correspond to columns of exprs
+names(pData(e))
+pData(e)$characteristics_ch1
+
+# fData gives feature data (probe information)
+fData(e)[1:3,1:3]
+dim(fData(e))    # rows of fData correspond to rows of exprs
+names(fData(e))
+head(fData(e)$"Gene Symbol")
+head(rownames(e))
+
+# additional annotation tied to ExpressionSet
+experimentData(e)
+annotation(e)
+```
+
+### Summarized Experiment
+
+```{r message=FALSE}
+library(parathyroidSE)
+```
+
+
+```{r}
+data(parathyroidGenesSE)
+se <- parathyroidGenesSE
+se
+```
+
+
+```{r}
+# assay contains results of the assay 
+dim(se)
+assay(se)[1:3,1:3]
+dim(assay(se))    # rows = features (ranges), columns = samples
+
+# colData contains sample information
+colData(se)[1:3,1:6]
+dim(colData(se))
+names(colData(se))
+colData(se)$treatment
+
+# rowRanges contains feature information
+rowRanges(se)[1]
+class(rowRanges(se))
+length(rowRanges(se))
+head(rownames(se))
+metadata(rowRanges(se))
+
+# additional metadata, including sample information
+metadata(se)$MIAME
+abstract(metadata(se)$MIAME)
+```
+
+## Footnotes
+
+For more information about the `GenomicRanges` package, check out the PLOS Comp Bio paper, which the authors of GenomicRanges published:
+
+http://www.ploscompbiol.org/article/info%3Adoi%2F10.1371%2Fjournal.pcbi.1003118
+
+For more information on *SummarizedExperiment*:
+
+http://www.nature.com/nmeth/journal/v12/n2/abs/nmeth.3252.html
+
+Also the software vignettes have a lot of details about the functionality. Check out "An Introduction to Genomic Ranges Classes". All of the vignette PDFs are available here:
+
+http://www.bioconductor.org/packages/release/bioc/html/GenomicRanges.html
+
